@@ -1,0 +1,60 @@
+Auction Tech spec:
+
+Objects:
+	perminantMember(username, walletAddress, numGems)
+	guest(walletAddress)
+	chat(message, user)
+	AuctionabaleItem(timeRemaining, currentPrice, NFT, lastBid)
+	lastBid(personBidding, amount)
+	ArrayList messages <chat>
+	websiteWallet(walletAddress)
+
+Vairables:
+	numberOfBlocksRemaining
+	current price
+	bid amount 
+Methods:
+	AddMember(walletAddress)
+	AddGuest(walletAddress)
+	sell(AuctionabaleItem, timeRemaining, startPrice)
+	 - creates auctinableItem 
+	 - has person put in time remaining and start price (default is a hr worth of blocks and 1 wolvercoin)
+	placebet(bidAmount, username, AuctionabaleItem)
+	 - checks for end time using time remining in auctionale item obj
+	 - checks bid amount and whether user has it in wallet
+	 - updates auctionableItem's last bid to a new one with the new price and user
+		doubleTime(timeRemaining)
+		-doubles time of bid
+	sendMessage(chat)
+	- adds message ot arraylist of messages at the end
+	GiveBid
+	changeGems(numGems, NewAmount)
+	playGame(Price, PerminantMember)
+
+BID CLASS:
+variables:
+	-item
+	-timeRemaining
+	-
+Methods:
+	sell(AuctionabaleItem, timeRemaining, startPrice)
+		 - creates auctinableItem 
+		 - has person put in time remaining and start price (default is a hr worth of blocks and 1 wolvercoin)
+	placebet(bidAmount, username, AuctionabaleItem)
+	 - checks for end time using time remining in auctionale item obj
+	 checkTime()
+	 
+
+MEMBER CLASS:
+variables:
+-wallet address
+methods:
+	AddMember(walletAddress)
+	CheckMoney()
+
+GUEST CLASS:
+vairables:
+- wallet address
+Methods:
+	AddGuest(walletAddress)
+	CheckMoney()
