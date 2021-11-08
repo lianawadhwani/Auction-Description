@@ -27,10 +27,11 @@ contract Auction
         uint highestBid;
     }
     
-    function sell(string memory link, string memory name, uint256 price, uint duration) public 
+    function sell(string memory link, string memory name, uint256 price, uint duration) public returns(uint)
     {
         numOfItemsEver++;
         forSale.push(AuctionItems(link, name, price, (block.timestamp + duration), numOfItemsEver, msg.sender, 0));
+        return numOfItemsEver;
     }
     
     function addMember(address newUser) public returns (string memory)
