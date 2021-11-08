@@ -1,0 +1,78 @@
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity >=0.8.9;
+
+
+contract Auction 
+{
+    address[] permMembers;
+    uint256 numOfMembers;
+    uint numOfItemsEver = 0;
+    string[] storedMessages;
+    AuctionItems[] forSale;
+    
+    constructor()
+    {
+        numOfMembers = 0;
+    }
+    
+    struct AuctionItems
+    {
+        string itemLink;
+        string itemName;
+        uint256 auctionPrice;
+        uint auctionDuration;
+        uint auctionID;
+        address highestBidder;
+        uint highestBid;
+    }
+    
+    function sell(string memory link, string memory name, uint256 price, uint duration) public 
+    {
+        numOfItemsEver++;
+        forSale.push(AuctionItems(link, name, price, (block.timestamp + duration), numOfItemsEver, msg.sender, 0));
+    }
+    
+    function addMember(address newUser) public returns (string memory)
+    {
+        for(uint i = 0; i < permMembers.length; i++)
+        {
+           if(permMembers[i] == newUser)
+           {
+               return "This person is already a member";
+           }
+        }
+        permMembers.push(newUser);
+        return "Member has been added";
+    }
+    
+    function chat(string memory message) public returns (string memory)
+    {
+        storedMessages.push(message);
+        return "Chat Recorded";
+    }
+    
+    function checkBalance(address user) public view returns (uint256)
+    {
+        return user.balance;
+    }
+    
+    function bid(uint amountBid, uint itemId) public returns(string memory)
+    {
+       if(forSale[itemId-1].auctionDuration <= 0)
+       {
+           return "Auction has ended";
+       }
+       if(amountBid < forSale[itemId-1].highestBid)
+       {
+           return "Bid is too low!";
+       }
+       if(msg.sender.balance > amountBid)
+       {
+           forSale[itemId-1].highestBid = amountBid;
+           forSale[itemId-1].highestBidder = msg.sender;
+           return "You are now the highest bidder";
+       }
+       return "You Nonce";
+    }
+}
