@@ -3,17 +3,18 @@
 pragma solidity >=0.8.9;
 
 
-contract Auction 
+contract Ballot 
 {
     address[] permMembers;
     uint256 numOfMembers;
     uint numOfItemsEver = 0;
     string[] storedMessages;
-    AuctionItems[] forSale;
+    AuctionItems[] public forSale;
     
     constructor()
     {
         numOfMembers = 0;
+        isAuctionOver;
     }
     
     struct AuctionItems
@@ -21,17 +22,34 @@ contract Auction
         string itemLink;
         string itemName;
         uint256 auctionPrice;
-        uint auctionDuration;
+        uint auctionTime;
         uint auctionID;
         address highestBidder;
         uint highestBid;
+        bool liveAuction;
     }
+    
+    
     
     function sell(string memory link, string memory name, uint256 price, uint duration) public returns(uint)
     {
         numOfItemsEver++;
-        forSale.push(AuctionItems(link, name, price, (block.timestamp + duration), numOfItemsEver, msg.sender, 0));
+        forSale.push(AuctionItems(link, name, price, ((block.timestamp + duration)), numOfItemsEver, msg.sender, 0, true));
         return numOfItemsEver;
+    }
+    
+    function isAuctionOver() internal 
+    {
+        while (1==1)
+        {
+            for(uint i = 0; i < forSale.length; i++)
+            {
+                if (forSale[i].auctionTime-((block.timestamp))<= 0)
+                {
+                    forSale[i].liveAuction = false;
+                }
+            }
+        }
     }
     
     function addMember(address newUser) public returns (string memory)
@@ -60,7 +78,7 @@ contract Auction
     
     function bid(uint amountBid, uint itemId) public returns(string memory)
     {
-       if(forSale[itemId-1].auctionDuration <= 0)
+       if(forSale[itemId-1].auctionTime-block.timestamp <= 0)
        {
            return "Auction has ended";
        }
