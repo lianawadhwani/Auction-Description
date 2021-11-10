@@ -2,9 +2,11 @@
 
 pragma solidity >=0.8.9;
 
-
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 contract Ballot 
 {
+    
+    
     address[] permMembers;
     uint256 numOfMembers;
     uint numOfItemsEver = 0;
@@ -14,42 +16,35 @@ contract Ballot
     constructor()
     {
         numOfMembers = 0;
-        isAuctionOver;
     }
     
     struct AuctionItems
     {
-        string itemLink;
+        IERC721 nft;
+        uint nftId;
         string itemName;
         uint256 auctionPrice;
         uint auctionTime;
         uint auctionID;
         address highestBidder;
         uint highestBid;
-        bool liveAuction;
     }
     
     
     
-    function sell(string memory link, string memory name, uint256 price, uint duration) public returns(uint)
+    function sell(IERC721 link, uint _nftID, string memory name, uint256 price, uint duration) public returns(uint)
     {
         numOfItemsEver++;
-        forSale.push(AuctionItems(link, name, price, ((block.timestamp + duration)), numOfItemsEver, msg.sender, 0, true));
+        forSale.push(AuctionItems(link, _nftID, name, price, ((block.timestamp + duration)), numOfItemsEver, msg.sender, 0));
         return numOfItemsEver;
     }
     
-    function isAuctionOver() internal 
+    function someoneTookADub() external payable
     {
-        while (1==1)
-        {
-            for(uint i = 0; i < forSale.length; i++)
-            {
-                if (forSale[i].auctionTime-((block.timestamp))<= 0)
-                {
-                    forSale[i].liveAuction = false;
-                }
-            }
-        }
+          if (isAuctionOver == true)
+          {
+              
+          }
     }
     
     function addMember(address newUser) public returns (string memory)
@@ -63,6 +58,11 @@ contract Ballot
         }
         permMembers.push(newUser);
         return "Member has been added";
+    }
+    
+    function isAuctionOver(AuctionItems memory over) internal view
+    {
+        over.auctionTime-block.timestamp <= 0 ?  true :  false;
     }
     
     function chat(string memory message) public returns (string memory)
