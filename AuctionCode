@@ -85,7 +85,7 @@ contract Ballot
         return user.balance;
     }
     
-    function bid(uint amountBid, uint itemId) public returns(string memory)
+    function bid(uint amountBid, uint itemId) public payable returns(string memory)
     {
        if(forSale[itemId-1].auctionTime-block.timestamp <= 0)
        {
@@ -95,7 +95,7 @@ contract Ballot
        {
            return "Bid is too low!";
        }
-       if(msg.sender.balance > amountBid)
+       if(msg.sender.balance > amountBid && checkBalance(msg.sender) > amountBid)
        {
            forSale[itemId-1].highestBid = amountBid;
            forSale[itemId-1].highestBidder = payable(msg.sender);
