@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 contract Ballot 
 {
     
-    
+    event dubz(address payable winner, uint256 _highestBid);
     address[] permMembers;
     uint256 numOfMembers;
     uint numOfItemsEver = 0;
@@ -26,25 +26,34 @@ contract Ballot
         uint256 auctionPrice;
         uint auctionTime;
         uint auctionID;
-        address highestBidder;
+        address payable highestBidder;
         uint highestBid;
+        address payable auctionCreator;
     }
     
     
     
-    function sell(IERC721 link, uint _nftID, string memory name, uint256 price, uint duration) public returns(uint)
+    function sell(address _nft, uint _nftID, string memory name, uint256 price, uint duration) public returns(uint)
     {
         numOfItemsEver++;
-        forSale.push(AuctionItems(link, _nftID, name, price, ((block.timestamp + duration)), numOfItemsEver, msg.sender, 0));
+        forSale.push(AuctionItems(IERC721(_nft), _nftID, name, price, ((block.timestamp + duration)), numOfItemsEver, payable(msg.sender), 0, payable(msg.sender)));
         return numOfItemsEver;
     }
     
-    function someoneTookADub() external payable
+    function someoneTookADub(uint id) external payable returns(string memory)
     {
-          if (isAuctionOver == true)
+        require(msg.sender == forSale[id-1].auctionCreator, "You do not have permission to call this method.");
+          if (isAuctionOver(forSale[id-1]) == true)
           {
-              
+              if(msg.sender != forSale[id-1].highestBidder)
+              {
+                forSale[id-1].nft.transferFrom(forSale[id-1].highestBidder, msg.sender, forSale[id-1].nftId);
+                forSale[id-1].auctionCreator.transfer(msg.value);
+                emit dubz(forSale[id-1].highestBidder, forSale[id-1].highestBid);
+                return "transfer successful";
+              }
           }
+          return "unexpected error";
     }
     
     function addMember(address newUser) public returns (string memory)
@@ -60,9 +69,9 @@ contract Ballot
         return "Member has been added";
     }
     
-    function isAuctionOver(AuctionItems memory over) internal view
+    function isAuctionOver(AuctionItems memory over) internal view returns(bool)
     {
-        over.auctionTime-block.timestamp <= 0 ?  true :  false;
+       return over.auctionTime-block.timestamp <= 0 ?  true :  false;
     }
     
     function chat(string memory message) public returns (string memory)
@@ -89,7 +98,7 @@ contract Ballot
        if(msg.sender.balance > amountBid)
        {
            forSale[itemId-1].highestBid = amountBid;
-           forSale[itemId-1].highestBidder = msg.sender;
+           forSale[itemId-1].highestBidder = payable(msg.sender);
            return "You are now the highest bidder";
        }
        return "You Nonce";
