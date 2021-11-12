@@ -10,12 +10,13 @@ contract Ballot
     address[] permMembers;
     uint256 numOfMembers;
     uint numOfItemsEver = 0;
+    uint numOfMembers = 0;
     string[] storedMessages;
     AuctionItems[] public forSale;
     
     constructor()
     {
-        numOfMembers = 0;
+        
     }
     
     struct AuctionItems
@@ -40,18 +41,14 @@ contract Ballot
         return numOfItemsEver;
     }
     
-    function someoneTookADub(uint id) external payable returns(string memory)
+    function someoneTookADub(uint auctionIdNumber, uint256 num) external payable returns(string memory)
     {
-        require(msg.sender == forSale[id-1].auctionCreator, "You do not have permission to call this method.");
-          if (isAuctionOver(forSale[id-1]) == true)
+        require(msg.sender == forSale[auctionIdNumber-1].auctionCreator, "You do not have permission to call this method.");
+          if (isAuctionOver(forSale[auctionIdNumber-1]) == true)
           {
-              if(msg.sender == forSale[id-1].auctionCreator)
-              {
-                //forSale[id-1].nft.transferFrom( msg.sender, forSale[id-1].highestBidder, forSale[id-1].nftId);
-                //forSale[id-1].auctionCreator.transfer(msg.value);
-                emit dubz(forSale[id-1].highestBidder, forSale[id-1].highestBid);
+                forSale[auctionIdNumber-1].nft.safeTransferFrom(address(this), forSale[auctionIdNumber-1].highestBidder, forSale[auctionIdNumber-1].nftId);
+                emit dubz(forSale[auctionIdNumber-1].highestBidder, forSale[auctionIdNumber-1].highestBid);
                 return "transfer successful";
-              }
           }
           return "unexpected error";
     }
