@@ -45,10 +45,10 @@ contract Ballot
         require(msg.sender == forSale[id-1].auctionCreator, "You do not have permission to call this method.");
           if (isAuctionOver(forSale[id-1]) == true)
           {
-              if(msg.sender != forSale[id-1].highestBidder)
+              if(msg.sender == forSale[id-1].auctionCreator)
               {
-                forSale[id-1].nft.transferFrom(forSale[id-1].highestBidder, msg.sender, forSale[id-1].nftId);
-                forSale[id-1].auctionCreator.transfer(msg.value);
+                //forSale[id-1].nft.transferFrom( msg.sender, forSale[id-1].highestBidder, forSale[id-1].nftId);
+                //forSale[id-1].auctionCreator.transfer(msg.value);
                 emit dubz(forSale[id-1].highestBidder, forSale[id-1].highestBid);
                 return "transfer successful";
               }
@@ -71,7 +71,7 @@ contract Ballot
     
     function isAuctionOver(AuctionItems memory over) internal view returns(bool)
     {
-       return over.auctionTime-block.timestamp <= 0 ?  true :  false;
+       return over.auctionTime < block.timestamp  ?  true :  false;
     }
     
     function chat(string memory message) public returns (string memory)
@@ -87,7 +87,7 @@ contract Ballot
     
     function bid(uint amountBid, uint itemId) public payable returns(string memory)
     {
-       if(forSale[itemId-1].auctionTime-block.timestamp <= 0)
+       if(forSale[itemId-1].auctionTime < block.timestamp)
        {
            return "Auction has ended";
        }
@@ -95,7 +95,7 @@ contract Ballot
        {
            return "Bid is too low!";
        }
-       if(msg.sender.balance > amountBid && checkBalance(msg.sender) > amountBid)
+       if(msg.sender.balance > amountBid && forSale[itemId-1].auctionTime-block.timestamp >= 0)
        {
            forSale[itemId-1].highestBid = amountBid;
            forSale[itemId-1].highestBidder = payable(msg.sender);
