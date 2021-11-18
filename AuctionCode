@@ -8,9 +8,8 @@ contract Ballot
     
     event dubz(address payable winner, uint256 _highestBid);
     address[] permMembers;
-    uint256 numOfMembers;
     uint numOfItemsEver = 0;
-    uint numOfMembers = 0;
+    uint256 numOfMembers = 0;
     string[] storedMessages;
     AuctionItems[] public forSale;
     
@@ -41,7 +40,7 @@ contract Ballot
         return numOfItemsEver;
     }
     
-    function someoneTookADub(uint auctionIdNumber, uint256 num) external payable returns(string memory)
+    function someoneTookADub(uint auctionIdNumber) external payable returns(string memory)
     {
         require(msg.sender == forSale[auctionIdNumber-1].auctionCreator, "You do not have permission to call this method.");
           if (isAuctionOver(forSale[auctionIdNumber-1]) == true)
