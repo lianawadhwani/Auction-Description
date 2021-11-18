@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 contract Ballot 
 {
     
+    //Special features: There is an option to become a permanent member and an option to chat.
+    
     event dubz(address payable winner, uint256 _highestBid);
     address[] permMembers;
     uint numOfItemsEver = 0;
@@ -73,7 +75,7 @@ contract Ballot
     function chat(string memory message) public returns (string memory)
     {
         storedMessages.push(message);
-        return "Chat Recorded";
+        return message;
     }
     
     function checkBalance(address user) public view returns (uint256)
